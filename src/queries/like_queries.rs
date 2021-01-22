@@ -8,7 +8,7 @@ use crate::schema::likes;
 pub fn create_like<'a>(conn: &SqliteConnection, new_like: &NewLike) -> Result<Like, Error> {
     insert_into(likes::table).values(new_like).execute(conn)?;
 
-    Ok(get_like(conn, new_like.user_id, new_like.bin_id)?)
+    Ok(get_like(conn, new_like.user_id, new_like.bin_id)?.unwrap())
 }
 
 pub fn get_likes(conn: &SqliteConnection) -> Result<Vec<Like>, Error> {
@@ -27,8 +27,8 @@ pub fn get_like(
     conn: &SqliteConnection,
     like_user_id: i32,
     like_bin_id: i32,
-) -> Result<Like, Error> {
-    Ok(likes.find((like_user_id, like_bin_id)).first(conn)?)
+) -> Result<Option<Like>, Error> {
+    likes.find((like_user_id, like_bin_id)).first(conn).optional()
 }
 
 pub fn delete_like(
