@@ -1,6 +1,15 @@
+#[macro_use]
+extern crate diesel;
+extern crate dotenv;
+
 mod api;
+mod db;
+mod models;
+mod queries;
+mod schema;
 
 use api::*;
+use schema::*;
 
 #[rocket::launch]
 fn start() -> rocket::Rocket {

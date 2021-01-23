@@ -1,0 +1,3 @@
+DROP TABLE users;
+DROP TABLE bins;
+DROP TABLE likes;

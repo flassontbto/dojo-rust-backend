@@ -1,6 +1,4 @@
-use rocket::{
-    http::CookieJar,
-};
+use rocket::http::CookieJar;
 use std::convert::Infallible;
 
 pub const USER_COOKIE_NAME: &'static str = "user";

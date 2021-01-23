@@ -4,12 +4,12 @@ use rocket::{
 };
 
 mod dto;
-mod storage;
 mod guard;
+mod storage;
 
+pub use self::dto::UserLoginInfo;
 pub use self::guard::User;
 pub use self::storage::UserTable;
-pub use self::dto::UserLoginInfo;
 
 #[rocket::post("/login", data = "<info>")]
 pub fn login(
@@ -18,7 +18,10 @@ pub fn login(
     cookies: &CookieJar,
 ) -> Status {
     if users.inner().contains(&info) {
-        cookies.add(Cookie::new(self::guard::USER_COOKIE_NAME, info.0.get_name().to_owned()));
+        cookies.add(Cookie::new(
+            self::guard::USER_COOKIE_NAME,
+            info.0.get_name().to_owned(),
+        ));
         Status::Ok
     } else {
         Status::Unauthorized

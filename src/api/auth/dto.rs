@@ -7,9 +7,9 @@ pub struct UserLoginInfo {
 impl UserLoginInfo {
     pub fn new(name: String, password: String) -> Self {
         Self { name, password }
-	}
-	
-	pub fn get_name<'a>(&'a self) -> &'a str {
-		&self.name
-	}
+    }
+
+    pub fn get_name<'a>(&'a self) -> &'a str {
+        &self.name
+    }
 }
