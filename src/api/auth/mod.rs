@@ -5,25 +5,23 @@ use rocket::{
 
 mod dto;
 mod guard;
-mod storage;
 
-pub use self::dto::UserLoginInfo;
+use crate::db::Database;
+
+pub use self::dto::LoginDto;
 pub use self::guard::User;
-pub use self::storage::UserTable;
 
 #[rocket::post("/login", data = "<info>")]
-pub fn login(
-    info: Form<UserLoginInfo>,
-    users: rocket::State<UserTable>,
-    cookies: &CookieJar,
-) -> Status {
-    if users.inner().contains(&info) {
-        cookies.add(Cookie::new(
-            self::guard::USER_COOKIE_NAME,
-            info.0.get_name().to_owned(),
-        ));
-        Status::Ok
-    } else {
-        Status::Unauthorized
+pub async fn login<'a>(info: Form<LoginDto>, connection: Database, cookies: &CookieJar<'a>) -> Status {
+    let user = connection
+        .run(move |c| crate::queries::user_queries::by_name(c, info.get_name()))
+        .await;
+    match user {
+        Ok(Some(User { id, ..  })) => {
+            cookies.add(Cookie::new(self::guard::USER_COOKIE_NAME,id.to_string()));
+            Status::Ok
+        }
+        Ok(None) => Status::Unauthorized,
+        Err(_) => Status::InternalServerError
     }
 }

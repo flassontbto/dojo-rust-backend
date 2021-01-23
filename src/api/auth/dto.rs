@@ -1,14 +1,9 @@
 #[derive(rocket::request::FromForm, Hash, PartialEq, Eq)]
-pub struct UserLoginInfo {
+pub struct LoginDto {
     name: String,
-    password: String,
 }
 
-impl UserLoginInfo {
-    pub fn new(name: String, password: String) -> Self {
-        Self { name, password }
-    }
-
+impl LoginDto {
     pub fn get_name<'a>(&'a self) -> &'a str {
         &self.name
     }

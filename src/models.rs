@@ -1,4 +1,5 @@
 use super::schema::*;
+use serde::Serialize;
 
 #[derive(Queryable)]
 pub struct User {
@@ -6,7 +7,7 @@ pub struct User {
     pub pseudo: String,
 }
 
-#[derive(Queryable)]
+#[derive(Queryable, Serialize)]
 pub struct Bin {
     pub id: i32,
     pub author_id: i32,
@@ -28,10 +29,10 @@ pub struct NewUser<'a> {
 
 #[derive(Insertable)]
 #[table_name = "bins"]
-pub struct NewBin<'a> {
-    pub title: &'a str,
+pub struct NewBin {
+    pub title: String,
     pub author_id: i32,
-    pub code: &'a str,
+    pub code: String,
 }
 
 #[derive(Insertable)]

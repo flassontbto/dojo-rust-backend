@@ -1,30 +1,34 @@
-use rocket::http::CookieJar;
-use std::convert::Infallible;
+use rocket::http::Status;
+
+use crate::{db::Database, queries::user_queries::get_user};
+pub use crate::models::User;
 
 pub const USER_COOKIE_NAME: &'static str = "user";
 
-pub struct User(String);
-
-impl<'a> rocket::request::FromParam<'a> for User {
-    type Error = Infallible;
-
-    fn from_param(param: &'a rocket::http::RawStr) -> Result<Self, Self::Error> {
-        Ok(User(param.to_string()))
-    }
-}
-
 #[rocket::async_trait]
 impl<'a, 'r> rocket::request::FromRequest<'a, 'r> for User {
-    type Error = Infallible;
+    type Error = ();
 
     async fn from_request(
         request: &'a rocket::Request<'r>,
     ) -> rocket::request::Outcome<Self, Self::Error> {
         use rocket::request::Outcome;
-        let jar = rocket::try_outcome!(request.guard::<&CookieJar>().await);
-        match jar.get("user") {
-            Some(user) => Outcome::Success(User(user.value().into())),
-            None => Outcome::Forward(()),
+        let jar = request
+            .cookies()
+            .get(USER_COOKIE_NAME)
+            .map(|cookie| cookie.value().parse::<i32>())
+            .transpose();
+        match jar {
+            Ok(Some(user_id)) => {
+                let connection: Database = rocket::try_outcome!(request.guard().await);
+                match connection.run(move |c| get_user(c, user_id)).await {
+                    Ok(Some(user)) => Outcome::Success(user),
+                    Ok(None) => Outcome::Failure((Status::BadRequest, ())),
+                    Err(_) => Outcome::Failure((Status::InternalServerError, ())),
+                }
+            }
+            Ok(None) => Outcome::Forward(()),
+            Err(_) => Outcome::Failure((Status::BadRequest, ())),
         }
     }
 }

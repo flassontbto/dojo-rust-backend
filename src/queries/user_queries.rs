@@ -21,6 +21,10 @@ pub fn get_user(conn: &SqliteConnection, user_id: i32) -> Result<Option<User>, E
     users.find(user_id).first(conn).optional()
 }
 
+pub fn by_name(conn: &SqliteConnection, user_name: &str) -> Result<Option<User>, Error> {
+    users.filter(pseudo.eq(user_name)).first(conn).optional()
+}
+
 pub fn update_user(
     conn: &SqliteConnection,
     user_id: i32,
