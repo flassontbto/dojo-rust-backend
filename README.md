@@ -98,3 +98,33 @@ Comme toujours, la dépendance va dans le fichier [Cargo.toml](Cargo.toml) :
 [dependencies]
 rocket = { git = "https://github.com/SergioBenitez/Rocket.git" }
 ```
+
+## Diesel + Rocket : fusion !
+
+Rocket propose une crate `rocket_contrib` pour
+les intégrations à des crates externes :
+
+-   Bases de données (diesel)
+-   Sérialisation (serde)
+-   Templating (mustache/tera)
+
+### Setup (avec Diesel)
+
+```toml
+[dependencies]
+rocket_contrib = { features = ["diesel_sqlite_pool"], default-features = false, git = "https://github.com/SergioBenitez/Rocket.git" }
+```
+
+La configuration de la base de données passe par un fichier [Rocket.toml](Rocket.toml) :
+
+```toml
+[global.databases.db]
+url = "./database.sqlite"
+```
+
+### Le pooling
+
+L'intégration diesel supporte automatiquement le pooling
+des connexions à l'aide de la crate `r2d2`. On utilise pour
+cela le système de _fairing_ de Rocket, similaire aux
+_middlewares_ d'autres frameworks.
