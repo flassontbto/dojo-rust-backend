@@ -71,3 +71,30 @@ rejouer la migration :
 ```sh
 diesel migration redo
 ```
+
+## Rocket : un serveur web tout compris
+
+Rocket joue la carte du "tout-en-un",
+en proposant une intégration avec les outils
+les plus courants de l'écosystème Rust.
+Sérialisation, base de données, cookies, environnements, tout est déjà prévu.
+
+ℹ️ D'autres implémentations de serveur web existent,
+avec des promesses et des compromis différents.
+On peut citer [actix](https://actix.rs), [warp](https://github.com/seanmonstar/warp) ou [tide](https://github.com/http-rs/tide), mais Rocket constitue un très bon équilibre
+entre performance et courbe d'apprentissage.
+
+### Setup
+
+**Note** Nous utiliseront la version `0.5` de Rocket,
+qui introduit le support de `async/await`.
+Celle-ci n'est pas encore publiée sur le registry car certaines
+fonctionnalités plus avancées que l'usage de ce code
+sont en cours d'implémentation.
+
+Comme toujours, la dépendance va dans le fichier [Cargo.toml](Cargo.toml) :
+
+```toml
+[dependencies]
+rocket = { git = "https://github.com/SergioBenitez/Rocket.git" }
+```
