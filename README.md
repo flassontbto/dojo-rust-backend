@@ -196,4 +196,59 @@ Puis déclarer simplement le type du dto et son format directement dans la décl
 pub async fn create(dto: Json<NewData>) -> Result
 ```
 
-Have fun lolmdr
+## Tracing : le log concurrent
+
+Cette crate de logging est orientée programmation
+asynchrone. Son objectif est d'identifier et filtrer
+facilement les évènements associés à un certain contexte,
+par opposition aux bibiliothèques classiques
+où le contexte se perd facilement en environnement
+concurrent.
+
+### Concepts clés
+
+Les **events** sont enregistrés par le développeurs.
+Ceux-ci comprennent un niveau de criticité (trace, debug, etc) et des données.
+
+Les **spans** représentent un bloc d'exécution temporel.
+Plusieurs _spans_ peuvent être entrées en même temps,
+constituant une arborescence.
+
+Les **fields** sont des données structurées et typées
+attachées aux _spans_. Ils constituent le contexte
+attaché aux _events_ lorsqu'ils sont émis.
+
+### Setup
+
+`tracing` expose la façade de log, à destination
+des développeurs d'application comme de
+dépendances.
+
+La sortie de logs passe un `Subscriber`
+à fournir à part. `tracing-subscriber` propose
+une implémentation par défaut de `Subscriber`,
+gérant déjà le filtrage par crate d'émission,
+_field_ et bien d'autres.
+
+Enfin, pour pouvoir instrumenter du code `async`,
+la crate `tracing-future` est nécessaire
+
+```toml
+[dependencies]
+tracing = "0.1.22"
+tracing-subscriber = "0.2.15"
+tracing-futures = "0.2.4"
+```
+
+### Utilisation
+
+Le `Subscriber` fourni par `tracing-subscriber`
+peut être controlé via la variable d'environnement
+`RUST_LOG`. Dans notre cas, on affichera l'intégralité
+des logs provenant de notre propre code :
+
+```sh
+RUST_LOG=nom_dossier=trace cargo run
+# curl http://localhost:8000
+> Feb 05 12:00:00.000 DEBUG index{\_addr=127.0.0.1:62381}: rust_backend_dojo: GET /
+```
