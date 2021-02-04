@@ -20,9 +20,7 @@ pub struct Database(diesel::SqliteConnection);
 fn start() -> rocket::Rocket {
     rocket::ignite()
         .attach(Database::fairing())
-        .mount("/", rocket::routes![index])
-        .mount("/", rocket::routes![user])
-        .mount("/", rocket::routes![create])
+        .mount("/", rocket::routes![index, user, create])
 }
 
 #[rocket::get("/")]
