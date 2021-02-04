@@ -1,3 +1,5 @@
+use rocket_contrib::json::Json;
+
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
@@ -16,19 +18,12 @@ fn start() -> rocket::Rocket {
 }
 
 #[rocket::get("/")]
-pub async fn index(database: Database) -> Result<String, ()> {
+pub async fn index(database: Database) -> Result<Json<Vec<models::User>>, ()> {
     use crate::models::User;
     use diesel::prelude::*;
 
     let users: Result<Vec<User>, _> = database
         .run(|c| crate::schema::users::table.get_results::<crate::models::User>(c))
         .await;
-    users
-        .map(|users| {
-            users
-                .iter()
-                .map(|user| format!("{}\n", user.pseudo))
-                .collect::<String>()
-        })
-        .map_err(|_| ())
+    users.map(Json).map_err(|_| ())
 }

@@ -128,3 +128,36 @@ L'intégration diesel supporte automatiquement le pooling
 des connexions à l'aide de la crate `r2d2`. On utilise pour
 cela le système de _fairing_ de Rocket, similaire aux
 _middlewares_ d'autres frameworks.
+
+## Serde : des structs au JSON
+
+Serde est la crate de référence pour **sér**ialiser et
+**dé**sérialiser depuis du JSON, ainsi que différents autres formats.
+Rocket propose une intégration de serde, permetttant de
+prendre en entrée et sortie des endpoints des struct Rust.
+
+### Setup
+
+Serde expose plusieurs crates : une tranverse, et
+autant de crates que de format. De plus, la feature
+`derive` permet d'implémenter automatiquement les
+traits de serialisation et déserialisation.
+
+Concernant Rocket, `rocket_contrib` expose également
+une feature `json` à activer pour lire et retourner
+des struct gérés par serde (cf section suivante).
+
+```toml
+[dependencies]
+serde = { version = "1.0.118", features = ["derive"] }
+serde_json = "1.0.61"
+
+rocket_contrib = { features = ["diesel_sqlite_pool", "json"], default-features = false, git = "https://github.com/SergioBenitez/Rocket.git" }
+```
+
+### Mise en place
+
+Dans la majorité des cas, la feature `derive` suffit
+pour rendre une struct (dé)sérialisable. À noter : des [options de configuration](https://serde.rs/attributes.html)
+sont disponibles. En dernier recours, l'implémentation manuelle
+reste disponible.
