@@ -161,3 +161,39 @@ Dans la majorité des cas, la feature `derive` suffit
 pour rendre une struct (dé)sérialisable. À noter : des [options de configuration](https://serde.rs/attributes.html)
 sont disponibles. En dernier recours, l'implémentation manuelle
 reste disponible.
+
+
+## Ajouter des routes, questionner la base
+
+Là concrètement on ne fait rien de particulièrement compliqué. On cherche à utiliser de manière plus extensive la DSL de Diesel pour faire des requêtes en base.
+Surtout, n'oubliez pas de préciser à Rocket via Ignite la déclaration des chemins et leurs affectations de fonctions.
+
+### Mettre des paramètres dans les routes
+
+Pour les requêtes avec des paramètres dans la route, il suffit de préciser dans le chemin `<votre_paramètre>`. Puis définir une variable avec ce même nom dans les paramètres de votre méthode, et le tour est joué. Par exemple :
+
+```rust
+#[rocket::get("/<id>")]
+pub async fn user(id: i32) -> Result
+```
+
+### Faire passer des body JSON dans les requêtes
+
+Il faut d'abord déclarer le DTO qui sera passé dans la requête :
+
+```rust
+#[derive(serde::Deserialize)]
+pub struct NewData {
+    data: String
+}
+```
+
+Ne surtout pas oublier le `#[derive(serde::Deserialize)]`, qui permettra de passer de l'objet JSON à l'objet Rust.
+Puis déclarer simplement le type du dto et son format directement dans la déclaration de la route ...
+
+```rust
+#[rocket::post("/data", data="<dto>", format="json")]
+pub async fn create(dto: Json<NewData>) -> Result
+```
+
+Have fun lolmdr
